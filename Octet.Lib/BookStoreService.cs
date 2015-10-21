@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic;
+using System.Reflection;
 using System.Runtime.Caching;
 using System.Threading;
 using BookStore;
@@ -9,13 +11,22 @@ namespace Octet.Lib
 {
     public class BookStoreService : IBookStore
     {
+        private const int MaxTake = 1000;
         private readonly static DateTimeOffset CacheExpiryTime = DateTimeOffset.MaxValue;
         private readonly static TimeSpan AcquireLockTimeout = TimeSpan.FromSeconds(10);
-        private const int MaxTake = 1000;
+        private readonly static IReadOnlyCollection<string> Fields; 
 
         private readonly BookStoreSource _store;
         private readonly ObjectCache _cache = new MemoryCache("book-store");
         private readonly ReaderWriterLock _lock = new ReaderWriterLock();
+
+        static BookStoreService()
+        {
+            Fields = typeof (BookData).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Select(p => p.Name)
+                .OrderBy(x => x)
+                .ToArray();
+        }
 
         public BookStoreService(BookStoreSource store)
         {
@@ -23,12 +34,11 @@ namespace Octet.Lib
                 throw new ArgumentNullException(nameof(store));
 
             _store = store;
-
             try
             {
                 AcquireWriterLock();
                 // fill in-memory cache:
-                _store.GetAll().ForEach(AddToCache);
+                _store.GetAll().ForEach(UpdateCache);
             }
             finally
             {
@@ -88,6 +98,11 @@ namespace Octet.Lib
             UpdateBook(x => _store.Update(x), book);
         }
 
+        public IReadOnlyCollection<string> GetSortingFields()
+        {
+            return Fields;
+        }
+
         private void UpdateBook(Action<BookData> updateAction, BookData book)
         {
             if (updateAction == null)
@@ -99,7 +114,7 @@ namespace Octet.Lib
             {
                 AcquireWriterLock();
                 updateAction(book);
-                AddToCache(book);
+                UpdateCache(book);
             }
             finally
             {
@@ -107,7 +122,7 @@ namespace Octet.Lib
             }
         }
 
-        private void AddToCache(BookData book)
+        private void UpdateCache(BookData book)
         {
             _cache.Set(book.BookId.ToString(), book, CacheExpiryTime);
         }

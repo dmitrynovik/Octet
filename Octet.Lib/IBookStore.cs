@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BookStore;
 
@@ -10,5 +11,6 @@ namespace Octet.Lib
         BookData GetById(int id, bool cached = true);
         void Add(BookData book);
         void Update(BookData book);
+        IReadOnlyCollection<string> GetSortingFields();
     }
 }

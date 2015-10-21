@@ -7,16 +7,15 @@ namespace Octet.Lib.UnitTests
     [TestFixture]
     public class BookStoreServiceTest
     {
-        [Test]
-        public void Initializing_Service_Does_Not_Throw_Exception()
+        public BookStoreServiceTest()
         {
-            CreateService();
+            Service = new BookStoreService(new BookStoreSource());
         }
 
         [Test]
         public void Bookstore_Has_Books()
         {
-            Assert.IsTrue(CreateService().Search().Any());
+            Assert.IsTrue(Service.Search().Any());
         }
 
         [Test]
@@ -24,18 +23,16 @@ namespace Octet.Lib.UnitTests
         {
             const string author = "Dmitry Novik";
 
-            var service = CreateService();
-            var book = service.Search().First();
+            var book = Service.Search().First();
             book.Author = author;
-            service.Update(book);
+            Service.Update(book);
 
-            Assert.AreEqual(author, service.GetById(book.BookId, false).Author);
+            Assert.AreEqual(author, Service.GetById(book.BookId, false).Author);
         }
 
         [Test]
         public void Can_Insert_Book()
         {
-            var service = CreateService();
             var book = new BookData()
             {
                 Author = "Dmitry Novik",
@@ -44,8 +41,8 @@ namespace Octet.Lib.UnitTests
                 Title = "A Nightmare on Elm Street"
             };
 
-            service.Add(book);
-            var book2 = service.Search(b => b.Title == "A Nightmare on Elm Street").First();
+            Service.Add(book);
+            var book2 = Service.Search(b => b.Title == "A Nightmare on Elm Street").First();
 
             Assert.AreEqual("Dmitry Novik", book2.Author);
             Assert.AreEqual("A Nightmare on Elm Street", book2.Title);
@@ -53,9 +50,6 @@ namespace Octet.Lib.UnitTests
             Assert.AreEqual("Fiction", book2.Genre);
         }
 
-        private static BookStoreService CreateService()
-        {
-            return new BookStoreService(new BookStoreSource());
-        }
+        private BookStoreService Service { get; }
     }
 }
