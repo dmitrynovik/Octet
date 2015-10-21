@@ -9,6 +9,9 @@ using BookStore;
 
 namespace Octet.Lib
 {
+    /// <remarks>
+    /// NOTE: This simple implementation is using memory cache and therefore is not suitable for horizontal scaling.
+    /// </remarks>>
     public class BookStoreService : IBookStore
     {
         private const int MaxTake = 1000;
