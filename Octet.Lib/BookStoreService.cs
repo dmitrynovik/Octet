@@ -12,7 +12,7 @@ namespace Octet.Lib
     public class BookStoreService : IBookStore
     {
         private const int MaxTake = 1000;
-        private readonly static DateTimeOffset CacheExpiryTime = DateTimeOffset.MaxValue;
+        private readonly static DateTimeOffset CacheExpiryTime = DateTimeOffset.UtcNow.AddHours(24);
         private readonly static TimeSpan AcquireLockTimeout = TimeSpan.FromSeconds(10);
         private readonly static IReadOnlyCollection<string> Fields; 
 
