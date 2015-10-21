@@ -5,20 +5,23 @@
 <h1>Books Store</h1>
 
 <div class="row js-grid-container">
-@Html.Grid(Model).Columns(columns =>
-{
-    columns.Add().Encoded(false).Sanitized(false).SetWidth(30).RenderValueAs(d =>
-    @<b>
-        @Html.ActionLink("Edit", "Index")
-    </b>);
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add().Encoded(false).Sanitized(false).SetWidth(30).RenderValueAs(d =>
+            @<b>
+                @Html.ActionLink("Edit", "Edit", new {@id = d.BookId})
+            </b>);
 
-    columns.Add(o => o.Author).Filterable(true);
+        columns.Add(o => o.Author).Filterable(true);
 
-    columns.Add(o => o.Genre);
+        columns.Add(o => o.Genre);
 
-    columns.Add(o => o.Rating);
+        columns.Add(o => o.Rating);
 
-    columns.Add(o => o.Title);
+        columns.Add(o => o.Title);
 
-}).WithPaging(15).Sortable().Filterable().WithMultipleFilters()
+    }).WithPaging(15).Sortable().Filterable().WithMultipleFilters()
+</div>
+<div class="row">
+   @Html.ActionLink("Add new", "Edit", new { @id = 0 }, new { @class="btn btn-primary" })
 </div>

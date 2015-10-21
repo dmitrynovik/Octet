@@ -1,0 +1,30 @@
+﻿@model BookStore.BookData
+
+<div class="row">
+    <h1>Add / Edit Book</h1>    
+</div>
+
+@using (Html.BeginForm("Edit"))
+{
+    @Html.HiddenFor(m => m.BookId)
+    <div class="row">
+        @Html.LabelFor(m => m.Author)
+        @Html.TextBoxFor(m => m.Author, new { @class = "form-control" })
+    </div>
+    <div class="row">
+        @Html.LabelFor(m => m.Genre)
+        @Html.TextBoxFor(m => m.Genre, new { @class = "form-control" })
+    </div>
+    <div class="row">
+        @Html.LabelFor(m => m.Rating)
+        @Html.TextBoxFor(m => m.Rating, new { @class = "form-control" })
+    </div>
+    <div class="row">
+        @Html.LabelFor(m => m.Title)
+        @Html.TextBoxFor(m => m.Title, new {@class = "form-control"})
+    </div>
+    <hr/>
+    <div class="row">
+        <input type="submit" class="btn btn-primary">        
+    </div>
+}

@@ -14,5 +14,25 @@ namespace Octet.Web.Controllers
             var items = _storeService.Search().ToList();
             return View(items);
         }
+
+        public ActionResult Edit(int id)
+        {
+            var book = _storeService.Search(x => x.BookId == id).FirstOrDefault();
+            return View(book);
+        }
+
+        [HttpPost]
+        public ActionResult Edit(BookData book)
+        {
+            if (book.BookId == 0)
+            {
+                _storeService.Add(book);
+            }
+            else
+            {
+                _storeService.Update(book);
+            }
+            return RedirectToAction("Index");
+        }
     }
 }
