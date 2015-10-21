@@ -56,25 +56,52 @@ namespace Octet.Lib
             try
             {
                 AcquireReaderLock();
-                var query = _cache.Select(kvp => kvp.Value).Cast<BookData>().AsQueryable();
-
+                var query = CachedBooks();
                 if (filter != null)
                 {
                     query = query.Where(x => filter(x));
                 }
-
-                if (!string.IsNullOrWhiteSpace(sortBy))
-                {
-                    // Using Linq.Dynamic:
-                    query = @ascending ? query.OrderBy(sortBy) : query.OrderBy(sortBy).Reverse();
-                }
-
+                query = ApplySorting(sortBy, @ascending, query);
                 return query.Take(MaxTake);
             }
             finally
             {
                 ReleaseReaderLock();
             }
+        }
+
+        public IQueryable<BookData> Search(string filter, string sortBy = null, bool @ascending = true)
+        {
+            try
+            {
+                AcquireReaderLock();
+                var query = CachedBooks();
+                if (filter != null)
+                {
+                    query = query.Where(filter);
+                }
+                query = ApplySorting(sortBy, @ascending, query);
+                return query.Take(MaxTake);
+            }
+            finally
+            {
+                ReleaseReaderLock();
+            }
+        }
+
+        private IQueryable<BookData> CachedBooks()
+        {
+            return _cache.Select(kvp => kvp.Value).Cast<BookData>().AsQueryable();
+        }
+
+        private static IQueryable<BookData> ApplySorting(string sortBy, bool @ascending, IQueryable<BookData> query)
+        {
+            if (!string.IsNullOrWhiteSpace(sortBy))
+            {
+                // Using Linq.Dynamic:
+                query = @ascending ? query.OrderBy(sortBy) : query.OrderBy(sortBy).Reverse();
+            }
+            return query;
         }
 
         public BookData GetById(int id, bool cached = true)

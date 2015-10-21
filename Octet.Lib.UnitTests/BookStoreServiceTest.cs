@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Linq.Dynamic;
 using BookStore;
 using NUnit.Framework;
 
@@ -55,6 +57,12 @@ namespace Octet.Lib.UnitTests
         {
             var books = Service.Search(x => x.Genre.Contains("Children"));
             Assert.AreEqual(2, books.Count());
+        }
+
+        [Test]
+        public void DynamicQuery()
+        {
+            Service.Search().Where("Title.ToString().Contains(\"a\")").ToList().ForEach(b => Console.WriteLine(b.Title));
         }
 
         private BookStoreService Service { get; }

@@ -45,12 +45,42 @@ namespace Octet.Web.Controllers
 
         private List<BookData> SearchItems()
         {
-            Func<BookData, bool> filter = (book) => true;
+            string filter = ComposePredicate(Request.QueryString["grid-filter"]);
             var sortColumn = Request.QueryString["grid-column"];
             var ascending = Request.QueryString["grid-dir"] == "1";
 
             return _storeService.Search(filter, sortColumn, @ascending).ToList();
         }
 
+        private static string ComposePredicate(string gridFilterString)
+        {
+            if (gridFilterString == null)
+                return null;
+
+            var tokens = gridFilterString.Split(new[] { "__" }, StringSplitOptions.RemoveEmptyEntries);
+            if (tokens.Length < 3)
+                return null;
+
+            string sProperty = tokens[0];
+            string sOperator = tokens[1];
+            string sOperand= tokens[2];
+            switch (sOperator)
+            {
+                case "1":
+                    return string.Format("{0}.ToString().Equals(\"{1}\")", sProperty, sOperand);
+                case "2":
+                    return string.Format("{0}.Contains(\"{1}\")", sProperty, sOperand);
+                case "3":
+                    return string.Format("{0}.StartsWith(\"{1}\")", sProperty, sOperand);
+                case "4":
+                    return string.Format("{0}.EndsWith(\"{1}\")", sProperty, sOperand);
+                case "5":
+                    return string.Format("{0} > {1}", sProperty, sOperand);
+                case "6":
+                    return string.Format("{0} < {1}", sProperty, sOperand);
+                default:
+                    return null;
+            }
+        }
     }
 }
