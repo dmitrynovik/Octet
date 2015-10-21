@@ -14,10 +14,10 @@ namespace Octet.Web.Controllers
         public ActionResult Index()
         {
             Func<BookData, bool> filter = (book) => true;
-            var column = Request.QueryString["grid-column"];
+            var sortColumn = Request.QueryString["grid-column"];
             var ascending = Request.QueryString["grid-dir"] == "1";
 
-            var items = _storeService.Search(filter, column, ascending).ToList();
+            var items = _storeService.Search(filter, sortColumn, ascending).ToList();
             return View(items);
         }
 
