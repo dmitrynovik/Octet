@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Data.Entity.Core.Common.EntitySql;
+using System.Linq;
 using System.Web.Mvc;
 using BookStore;
 using Octet.Lib;
@@ -11,7 +13,11 @@ namespace Octet.Web.Controllers
 
         public ActionResult Index()
         {
-            var items = _storeService.Search().ToList();
+            Func<BookData, bool> filter = (book) => true;
+            var column = Request.QueryString["grid-column"];
+            var ascending = Request.QueryString["grid-dir"] == "1";
+
+            var items = _storeService.Search(filter, column, ascending).ToList();
             return View(items);
         }
 

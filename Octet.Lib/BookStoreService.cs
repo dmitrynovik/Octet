@@ -54,11 +54,11 @@ namespace Octet.Lib
             try
             {
                 AcquireReaderLock();
-                var query = _cache.AsQueryable();
+                var query = _cache.Select(kvp => kvp.Value).Cast<BookData>().AsQueryable();
 
                 if (filter != null)
                 {
-                    query = query.Where(kvp => filter((BookData) kvp.Value));
+                    query = query.Where(x => filter(x));
                 }
 
                 if (!string.IsNullOrWhiteSpace(sortBy))
@@ -67,7 +67,7 @@ namespace Octet.Lib
                     query = @ascending ? query.OrderBy(sortBy) : query.OrderBy(sortBy).Reverse();
                 }
 
-                return query.Select(kvp => kvp.Value).Take(MaxTake).Cast<BookData>();
+                return query.Take(MaxTake);
             }
             finally
             {
