@@ -12,15 +12,12 @@
                 @Html.ActionLink("Edit", "Edit", new {@id = d.BookId})
             </b>);
 
-        columns.Add(o => o.Author).Filterable(true);
-
+        columns.Add(o => o.Author);
         columns.Add(o => o.Genre);
-
         columns.Add(o => o.Rating);
-
         columns.Add(o => o.Title);
 
-    }).WithPaging(15).Sortable().Filterable().WithMultipleFilters()
+    }).Sortable().Filterable().WithMultipleFilters()
 </div>
 <div class="row">
    @Html.ActionLink("Add new", "Edit", new { @id = 0 }, new { @class="btn btn-primary" })
