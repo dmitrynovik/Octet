@@ -50,6 +50,13 @@ namespace Octet.Lib.UnitTests
             Assert.AreEqual("Fiction", book2.Genre);
         }
 
+        [Test]
+        public void There_are_2_Books_Of_Children_Genre()
+        {
+            var books = Service.Search(x => x.Genre.Contains("Children"));
+            Assert.AreEqual(2, books.Count());
+        }
+
         private BookStoreService Service { get; }
     }
 }
