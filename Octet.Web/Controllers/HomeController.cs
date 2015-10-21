@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data.Entity.Core.Common.EntitySql;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using BookStore;
@@ -13,12 +13,14 @@ namespace Octet.Web.Controllers
 
         public ActionResult Index()
         {
-            Func<BookData, bool> filter = (book) => true;
-            var sortColumn = Request.QueryString["grid-column"];
-            var ascending = Request.QueryString["grid-dir"] == "1";
+            return View(SearchItems());
+        }
 
-            var items = _storeService.Search(filter, sortColumn, ascending).ToList();
-            return View(items);
+        public ActionResult Export()
+        {
+            var items = SearchItems();
+            var format = Request.QueryString["format"];
+            return ExportFactory.GetFile(format, items);
         }
 
         public ActionResult Edit(int id)
@@ -40,5 +42,14 @@ namespace Octet.Web.Controllers
             }
             return RedirectToAction("Index");
         }
+
+        private List<BookData> SearchItems()
+        {
+            Func<BookData, bool> filter = (book) => true;
+            var sortColumn = Request.QueryString["grid-column"];
+            var ascending = Request.QueryString["grid-dir"] == "1";
+            return _storeService.Search(filter, sortColumn, @ascending).ToList();
+        }
+
     }
 }
