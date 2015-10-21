@@ -17,17 +17,15 @@ namespace Octet.Lib
         private readonly static DateTimeOffset CacheExpiryTime = DateTimeOffset.UtcNow.AddHours(RefreshCacheIntervalHours);
         private readonly static TimeSpan AcquireLockTimeout = TimeSpan.FromSeconds(10);
 
-        private readonly BookStoreSource _store;
+        private readonly BookStoreSource _store = new BookStoreSource();
         private readonly ObjectCache _cache = new MemoryCache("book-store");
         private readonly ReaderWriterLock _lock = new ReaderWriterLock();
         private readonly Timer _cacheRefreshTimer;
 
-        public BookStoreService(BookStoreSource store)
-        {
-            if (store == null) 
-                throw new ArgumentNullException(nameof(store));
+        public static BookStoreService Instance { get; } = new BookStoreService();
 
-            _store = store;
+        private BookStoreService()
+        {
             FillCache();
 
             // Start timer to refresh cache every X hours:

@@ -9,15 +9,10 @@ namespace Octet.Lib.UnitTests
     [TestFixture]
     public class BookStoreServiceTest
     {
-        public BookStoreServiceTest()
-        {
-            Service = new BookStoreService(new BookStoreSource());
-        }
-
         [Test]
         public void Bookstore_Has_Books()
         {
-            Assert.IsTrue(Service.Search().Any());
+            Assert.IsTrue(BookStoreService.Instance.Search().Any());
         }
 
         [Test]
@@ -25,11 +20,11 @@ namespace Octet.Lib.UnitTests
         {
             const string author = "Dmitry Novik";
 
-            var book = Service.Search().First();
+            var book = BookStoreService.Instance.Search().First();
             book.Author = author;
-            Service.Update(book);
+            BookStoreService.Instance.Update(book);
 
-            Assert.AreEqual(author, Service.GetById(book.BookId, false).Author);
+            Assert.AreEqual(author, BookStoreService.Instance.GetById(book.BookId, false).Author);
         }
 
         [Test]
@@ -43,8 +38,8 @@ namespace Octet.Lib.UnitTests
                 Title = "A Nightmare on Elm Street"
             };
 
-            Service.Add(book);
-            var book2 = Service.Search(b => b.Title == "A Nightmare on Elm Street").First();
+            BookStoreService.Instance.Add(book);
+            var book2 = BookStoreService.Instance.Search(b => b.Title == "A Nightmare on Elm Street").First();
 
             Assert.AreEqual("Dmitry Novik", book2.Author);
             Assert.AreEqual("A Nightmare on Elm Street", book2.Title);
@@ -55,16 +50,14 @@ namespace Octet.Lib.UnitTests
         [Test]
         public void There_are_2_Books_Of_Children_Genre()
         {
-            var books = Service.Search(x => x.Genre.Contains("Children"));
+            var books = BookStoreService.Instance.Search(x => x.Genre.Contains("Children"));
             Assert.AreEqual(2, books.Count());
         }
 
         [Test]
         public void DynamicQuery()
         {
-            Service.Search().Where("Title.ToString().Contains(\"a\")").ToList().ForEach(b => Console.WriteLine(b.Title));
+            BookStoreService.Instance.Search().Where("Title.ToString().Contains(\"a\")").ToList().ForEach(b => Console.WriteLine(b.Title));
         }
-
-        private BookStoreService Service { get; }
     }
 }

@@ -9,8 +9,6 @@ namespace Octet.Web.Controllers
 {
     public class HomeController : Controller
     {
-        readonly BookStoreService _storeService = new BookStoreService(new BookStoreSource());
-
         public ActionResult Index()
         {
             return View(SearchItems());
@@ -25,7 +23,7 @@ namespace Octet.Web.Controllers
 
         public ActionResult Edit(int id)
         {
-            var book = _storeService.Search(x => x.BookId == id).FirstOrDefault();
+            var book = BookStoreService.Instance.Search(x => x.BookId == id).FirstOrDefault();
             return View(book);
         }
 
@@ -34,11 +32,11 @@ namespace Octet.Web.Controllers
         {
             if (book.BookId == 0)
             {
-                _storeService.Add(book);
+                BookStoreService.Instance.Add(book);
             }
             else
             {
-                _storeService.Update(book);
+                BookStoreService.Instance.Update(book);
             }
             return RedirectToAction("Index");
         }
@@ -49,7 +47,7 @@ namespace Octet.Web.Controllers
             var sortColumn = Request.QueryString["grid-column"];
             var ascending = Request.QueryString["grid-dir"] == "1";
 
-            return _storeService.Search(filter, sortColumn, @ascending).ToList();
+            return BookStoreService.Instance.Search(filter, sortColumn, @ascending).ToList();
         }
 
         private static string ComposePredicate(string gridFilterString)
