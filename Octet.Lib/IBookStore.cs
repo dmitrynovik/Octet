@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using BookStore;
 
 namespace Octet.Lib
 {
     interface IBookStore
     {
-        IEnumerable<BookData> GetAll(Expression<Func<BookData, bool>> filter );
-        BookData GetById(int id);
+        IQueryable<BookData> Search(Func<BookData, bool> filter = null, string sortBy = null, bool ascending = true);
+        BookData GetById(int id, bool cached = true);
         void Add(BookData book);
         void Update(BookData book);
     }
