@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic;
-using System.Reflection;
 using System.Runtime.Caching;
 using System.Threading;
 using BookStore;
@@ -12,24 +10,17 @@ namespace Octet.Lib
     /// <remarks>
     /// NOTE: This simple implementation is using memory cache and therefore is not suitable for horizontal scaling.
     /// </remarks>>
-    public class BookStoreService : IBookStore
+    public class BookStoreService : IBookStore, IDisposable
     {
         private const int MaxTake = 1000;
-        private readonly static DateTimeOffset CacheExpiryTime = DateTimeOffset.UtcNow.AddHours(24);
+        private const int RefreshCacheIntervalHours = 24;
+        private readonly static DateTimeOffset CacheExpiryTime = DateTimeOffset.UtcNow.AddHours(RefreshCacheIntervalHours);
         private readonly static TimeSpan AcquireLockTimeout = TimeSpan.FromSeconds(10);
-        private readonly static IReadOnlyCollection<string> Fields; 
 
         private readonly BookStoreSource _store;
         private readonly ObjectCache _cache = new MemoryCache("book-store");
         private readonly ReaderWriterLock _lock = new ReaderWriterLock();
-
-        static BookStoreService()
-        {
-            Fields = typeof (BookData).GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Select(p => p.Name)
-                .OrderBy(x => x)
-                .ToArray();
-        }
+        private readonly Timer _cacheRefreshTimer;
 
         public BookStoreService(BookStoreSource store)
         {
@@ -37,6 +28,17 @@ namespace Octet.Lib
                 throw new ArgumentNullException(nameof(store));
 
             _store = store;
+            FillCache();
+
+            // Start timer to refresh cache every X hours:
+            _cacheRefreshTimer = new Timer(_ => FillCache(), 
+                null, 
+                TimeSpan.FromHours(RefreshCacheIntervalHours), 
+                TimeSpan.FromHours(RefreshCacheIntervalHours));
+        }
+
+        private void FillCache()
+        {
             try
             {
                 AcquireWriterLock();
@@ -93,22 +95,17 @@ namespace Octet.Lib
 
         public void Add(BookData book)
         {
-            UpdateBook(x => _store.Add(x), book);
+            WriteBookToStore(x => _store.Add(x), book);
         }
 
         public void Update(BookData book)
         {
-            UpdateBook(x => _store.Update(x), book);
+            WriteBookToStore(x => _store.Update(x), book);
         }
 
-        public IReadOnlyCollection<string> GetSortingFields()
+        private void WriteBookToStore(Action<BookData> writeAction, BookData book)
         {
-            return Fields;
-        }
-
-        private void UpdateBook(Action<BookData> updateAction, BookData book)
-        {
-            if (updateAction == null)
+            if (writeAction == null)
                 return;
             if (book == null)
                 throw new ArgumentNullException(nameof(book));
@@ -116,7 +113,7 @@ namespace Octet.Lib
             try
             {
                 AcquireWriterLock();
-                updateAction(book);
+                writeAction(book);
                 UpdateCache(book);
             }
             finally
@@ -148,6 +145,11 @@ namespace Octet.Lib
         private void ReleaseWriterLock()
         {
             _lock.ReleaseWriterLock();
+        }
+
+        public void Dispose()
+        {
+            _cacheRefreshTimer.Dispose();
         }
     }
 }
