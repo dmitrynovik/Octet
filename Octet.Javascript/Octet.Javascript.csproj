@@ -43,9 +43,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="QUnit.js" />
+    <Content Include="Test.html" />
     <Content Include="Test1.js" />
     <Content Include="Test2.js" />
     <Content Include="Test3.js" />
+    <Content Include="UnitTest.js" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
