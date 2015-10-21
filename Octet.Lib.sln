@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Octet.Lib.UnitTests", "Octe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Octet.BookStore.Web", "Octet.Web\Octet.BookStore.Web.csproj", "{96D62605-B035-4251-8140-403FCC11CCF8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Octet.Javascript", "Octet.Javascript\Octet.Javascript.csproj", "{CA1A0160-05BD-4055-8C98-619F43F17F85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{96D62605-B035-4251-8140-403FCC11CCF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96D62605-B035-4251-8140-403FCC11CCF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96D62605-B035-4251-8140-403FCC11CCF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA1A0160-05BD-4055-8C98-619F43F17F85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA1A0160-05BD-4055-8C98-619F43F17F85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA1A0160-05BD-4055-8C98-619F43F17F85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA1A0160-05BD-4055-8C98-619F43F17F85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -48,6 +48,7 @@ namespace Octet.Web.Controllers
             Func<BookData, bool> filter = (book) => true;
             var sortColumn = Request.QueryString["grid-column"];
             var ascending = Request.QueryString["grid-dir"] == "1";
+
             return _storeService.Search(filter, sortColumn, @ascending).ToList();
         }
 
